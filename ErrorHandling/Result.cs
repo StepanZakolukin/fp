@@ -9,16 +9,10 @@ public class None
     }
 }
 
-public struct Result<T>
+public struct Result<T>(string error, T value = default(T))
 {
-    public Result(string error, T value = default(T))
-    {
-        Error = error;
-        Value = value;
-    }
-
-    public string Error { get; }
-    internal T Value { get; }
+    public string Error { get; } = error;
+    internal T Value { get; } = value;
 
     public T GetValueOrThrow()
     {
