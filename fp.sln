@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TagCloud", "TagCloud", "{6B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud", "C:\Users\stepa\RiderProjects\di\TagCloud\TagCloud.csproj", "{F97DD3D5-85F0-4ADA-B914-F7CA8716E0BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud.GUI", "C:\Users\stepa\RiderProjects\di\TagCloud.GUI\TagCloud.GUI.csproj", "{EEFF950C-B04E-44CC-8405-C14AD7BBCDBE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloudGUI", "C:\Users\stepa\RiderProjects\di\TagCloudGUI\TagCloudGUI.csproj", "{EEFF950C-B04E-44CC-8405-C14AD7BBCDBE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud.Tests", "C:\Users\stepa\RiderProjects\di\TagCloud.Tests\TagCloud.Tests.csproj", "{E22C6DB1-2919-4D0C-8CE9-E97A47A9C93F}"
 EndProject
