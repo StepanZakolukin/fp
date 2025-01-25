@@ -38,11 +38,11 @@ public class ImageSizeDtoTests
         CheckForInaccuracy(width, height);
     }
     
-    [TestCase(1080, 1920)]
-    public void GetValueOrThrow_CorrectValue_NotThrowException(float width, float height)
+    [TestCase("1080", "1920")]
+    public void GetValueOrThrow_CorrectValue_NotThrowException(string width, string height)
     {
-        _imageSize.Width = width.ToString();
-        _imageSize.Height = height.ToString();
+        _imageSize.Width = width;
+        _imageSize.Height = height;
         var action = () => _imageSize.GetValueOrThrow();
         
         action.Should().NotThrow();
