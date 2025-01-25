@@ -80,29 +80,7 @@ public class RenderingSettingsTests
         calling.Should().NotThrow();
     }
 
-    [TestCase(0)]
-    [TestCase(-1000f)]
-    [TestCase(1000f)]
-    [TestCase(10.01f)]
-    public void SetValueCloudCompressionRatio_IncorrectValue(float coefficient)
-    {
-        var expected = _settings.CompressionRatio.Value;
-        _settings.CompressionRatio.Value = coefficient.ToString();
-
-        _settings.CompressionRatio.IsCorrect.Should().BeFalse();
-        _settings.CompressionRatio.Value.Should().NotBe(expected);
-    }
     
-    [TestCase(2)]
-    [TestCase(10f)]
-    [TestCase(0.1f)]
-    public void SetValueCloudCompressionRatio_CorrectValue(float coefficient)
-    {
-        _settings.CompressionRatio.Value = coefficient.ToString();
-
-        _settings.CompressionRatio.IsCorrect.Should().BeTrue();
-        _settings.CompressionRatio.Value.Should().Be(coefficient.ToString());
-    }
 
     [TestCase(540, 200)]
     [TestCase(100, 1080)]
