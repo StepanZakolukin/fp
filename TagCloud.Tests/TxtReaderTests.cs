@@ -6,13 +6,13 @@ namespace TagCloud.Tests;
 [TestFixture]
 public class TxtReaderTests
 {
-    private readonly TxtReader reader = new();
-    private readonly string pathToFileFolder = Path.Combine(Directory.GetCurrentDirectory(), "TestsFiles");
+    private readonly TxtReader _reader = new();
+    private readonly string _pathToFileFolder = Path.Combine(Directory.GetCurrentDirectory(), "TestsFiles");
     
     [Test]
     public void ReadTextLineByLine_UnExistingFile_ThrowFileNotFoundException()
     {
-        var calling = () => reader.ReadTextLineByLine("UnExistingFile.txt").ToArray();
+        var calling = () => _reader.ReadTextLineByLine("UnExistingFile.txt").ToArray();
 
         calling.Should().Throw<FileNotFoundException>();
     }
@@ -20,9 +20,9 @@ public class TxtReaderTests
     [Test]
     public void ReadTextLineByLine_EmptyFile_EmptyCollectionOfWords()
     {
-        var pathToFile = Path.Combine(pathToFileFolder, "EmptyFile.txt");
+        var pathToFile = Path.Combine(_pathToFileFolder, "EmptyFile.txt");
         
-        var actual = reader.ReadTextLineByLine(pathToFile);
+        var actual = _reader.ReadTextLineByLine(pathToFile);
         
         actual.Should().BeEmpty();
     }
@@ -30,7 +30,7 @@ public class TxtReaderTests
     [Test]
     public void ReadTextLineByLine_Text_CorrectWordCount()
     {
-        var pathToFile = Path.Combine(pathToFileFolder, "CheckingCount.txt");
+        var pathToFile = Path.Combine(_pathToFileFolder, "CheckingCount.txt");
         var frequencyDictionary = new Dictionary<string, int>
         {
             { "привет", 5 },
@@ -45,7 +45,7 @@ public class TxtReaderTests
         random.Shuffle(lines);
         File.WriteAllLines(pathToFile, lines);
         
-        var result = reader.ReadTextLineByLine(pathToFile);
+        var result = _reader.ReadTextLineByLine(pathToFile);
         
         result.All(line => frequencyDictionary[line] == result.Count(l => l == line)).Should().BeTrue();
     }
@@ -54,9 +54,9 @@ public class TxtReaderTests
     [TestCase("EmptyFile.doc")]
     public void ReadTextLineByLine_UnsuitableFormat_ThrowIOException(string filename)
     {
-        var pathToFile = Path.Combine(pathToFileFolder, filename);
+        var pathToFile = Path.Combine(_pathToFileFolder, filename);
         
-        var calling = () => reader.ReadTextLineByLine(pathToFile).ToArray();
+        var calling = () => _reader.ReadTextLineByLine(pathToFile).ToArray();
 
         calling.Should().Throw<IOException>();
     }

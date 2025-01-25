@@ -6,8 +6,8 @@ namespace TagCloud.Tests;
 [TestFixture]
 public class ReaderPickerTests
 {
-    private readonly ReaderPicker readerProvider = new([ new TxtReader() ]);
-    private readonly string pathToFileFolder = Path.Combine(Directory.GetCurrentDirectory(), "TestsFiles");
+    private readonly ReaderPicker _readerProvider = new([ new TxtReader() ]);
+    private readonly string _pathToFileFolder = Path.Combine(Directory.GetCurrentDirectory(), "TestsFiles");
     
     [Test]
     public void Constructor_Null_ThrowArgumentNullException()
@@ -22,7 +22,7 @@ public class ReaderPickerTests
     {
         var expected = new List<string> { ".txt" };
         
-        var actual = readerProvider.GetSupportedExtensions();
+        var actual = _readerProvider.GetSupportedExtensions();
         
         actual.Should().BeEquivalentTo(expected);
     }
@@ -30,9 +30,9 @@ public class ReaderPickerTests
     [Test]
     public void GetReader_PngFile_ThrowException()
     {
-        var path = Path.Combine(pathToFileFolder, "Morozko.png");
+        var path = Path.Combine(_pathToFileFolder, "Morozko.png");
         
-        var status = readerProvider.GetReader(path);
+        var status = _readerProvider.GetReader(path);
         
         status.IsSuccess.Should().BeFalse();
     }
@@ -40,9 +40,9 @@ public class ReaderPickerTests
     [Test]
     public void GetReader_CorrectFileExtension_NotThrow()
     {
-        var path = Path.Combine(pathToFileFolder, "Morozko.txt");
+        var path = Path.Combine(_pathToFileFolder, "Morozko.txt");
         
-        var call = () => readerProvider.GetReader(path);
+        var call = () => _readerProvider.GetReader(path);
         
         call.Should().NotThrow();
     }
@@ -51,10 +51,10 @@ public class ReaderPickerTests
     public void GetReader_CorrectPath_СorrectFunction()
     {
         var reader = new TxtReader();
-        var path = Path.Combine(pathToFileFolder, "Morozko.txt");
+        var path = Path.Combine(_pathToFileFolder, "Morozko.txt");
         var expected = () => reader.ReadTextLineByLine(path);
         
-        var actual = readerProvider.GetReader(path).GetValueOrThrow();
+        var actual = _readerProvider.GetReader(path).GetValueOrThrow();
         
         actual().Should().BeEquivalentTo(expected());
     }
@@ -62,7 +62,7 @@ public class ReaderPickerTests
     [Test]
     public void GetReader_UnExistingFile_ThrowFileNotFoundException()
     {
-        var status = readerProvider.GetReader("UnExistingFile.txt");
+        var status = _readerProvider.GetReader("UnExistingFile.txt");
 
         status.IsSuccess.Should().BeFalse();
     }
