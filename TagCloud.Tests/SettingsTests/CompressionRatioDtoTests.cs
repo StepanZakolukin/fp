@@ -20,7 +20,7 @@ public class CompressionRatioDtoTests
     [TestCase(0.1f)]
     [TestCase(10)]
     [TestCase(3)]
-    public void CompressionRatioDto_CorrectValueDuringInitialization_ThrowException(float coefficient)
+    public void CompressionRatioDto_CorrectInitialization_ThrowException(float coefficient)
     {
         var action = () => new CompressionRatioDto(coefficient);
         

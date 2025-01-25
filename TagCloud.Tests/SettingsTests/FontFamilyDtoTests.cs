@@ -7,6 +7,15 @@ namespace TagCloud.Tests.SettingsTests;
 public class FontFamilyDtoTests
 {
     private readonly FontFamilyDto _fontFamily = new("Calibri");
+
+    [TestCase("Arial")]
+    [TestCase("Calibri")]
+    public void FontFamilyDto_CorrectInitialization_NotThrowsException(string fontName)
+    {
+        var action = () => new FontFamilyDto(fontName);
+        
+        action.Should().NotThrow();
+    }
     
     [Test]
     public void FontFamilyDto_NullDuringInitialization_ThrowException()
@@ -57,5 +66,15 @@ public class FontFamilyDtoTests
         var action = () => _fontFamily.GetValueOrThrow();
         
         action.Should().Throw<InvalidOperationException>();
+    }
+
+    [TestCase("Arial")]
+    [TestCase("Calibri")]
+    public void GetValueOrThrow_SystemFont_NotThrowException(string fontName)
+    {
+        _fontFamily.Name = fontName;
+        var action = () => _fontFamily.GetValueOrThrow();
+        
+        action.Should().NotThrow();
     }
 }
