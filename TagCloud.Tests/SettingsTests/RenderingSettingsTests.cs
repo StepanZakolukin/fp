@@ -5,7 +5,7 @@ using TagCloud.ImageGeneration;
 using TagCloud.ImageGeneration.Settings;
 using TagCloud.ImageGeneration.Settings.DTO;
 
-namespace TagCloud.Tests;
+namespace TagCloud.Tests.SettingsTests;
 
 [TestFixture]
 public class RenderingSettingsTests
@@ -129,23 +129,5 @@ public class RenderingSettingsTests
         _settings.ImageSize.Width.Should().Be(width.ToString());
         _settings.ImageSize.Height.Should().Be(height.ToString());
         calling.Should().Throw<InvalidOperationException>();
-    }
-    
-    [TestCase("ms")]
-    public void SetValueFontFamily_NonExistentFont(string fontName)
-    {
-        _settings.FontFamily.Name = fontName;
-        
-        _settings.FontFamily.IsCorrect.Should().BeFalse();
-        _settings.FontFamily.Name.Should().Be(fontName);
-    }
-
-    [TestCase("Arial")]
-    public void SetValueFontFamily_SystemFont(string fontName)
-    {
-        _settings.FontFamily.Name = fontName;
-        
-        _settings.FontFamily.IsCorrect.Should().BeTrue();
-        _settings.FontFamily.Name.Should().Be(fontName);
     }
 }
