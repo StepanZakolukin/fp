@@ -31,23 +31,16 @@ public class TxtReaderTests
     public void ReadTextLineByLine_Text_CorrectWordCount()
     {
         var pathToFile = Path.Combine(_pathToFileFolder, "CheckingCount.txt");
-        var frequencyDictionary = new Dictionary<string, int>
-        {
-            { "привет", 5 },
-            { "морозный", 7 },
-            { "быстрый", 3 },
-            { "я", 20 },
-            { "человек", 2},
-            { "отчаянно", 8},
-        };
-        var lines = CreateArrayOfWords(frequencyDictionary);
-        var random = new Random();
-        random.Shuffle(lines);
+        var generator = new GeneratingTestData();
+        var lines = generator.Shuffle(generator.CreateArrayOfWords(GeneratingTestData.FrequencyDictionary));
         File.WriteAllLines(pathToFile, lines);
         
         var result = _reader.ReadTextLineByLine(pathToFile);
         
-        result.All(line => frequencyDictionary[line] == result.Count(l => l == line)).Should().BeTrue();
+        result
+            .All(line => GeneratingTestData.FrequencyDictionary[line] == result.Count(l => l == line))
+            .Should()
+            .BeTrue();
     }
     
     [TestCase("Morozko.png")]
@@ -59,15 +52,5 @@ public class TxtReaderTests
         var calling = () => _reader.ReadTextLineByLine(pathToFile).ToArray();
 
         calling.Should().Throw<IOException>();
-    }
-    
-    public static string[] CreateArrayOfWords(Dictionary<string, int> frequencyDictionary)
-    {
-        var list = new List<string>();
-        foreach (var pair in frequencyDictionary)
-            for (var i = 0; i < pair.Value; i++)
-                list.Add(pair.Key);
-        
-        return list.ToArray();
     }
 }

@@ -9,46 +9,33 @@ namespace TagCloud.Tests;
 public class LiteraryTextParserTests
 {
     private readonly LiteraryTextParser _literaryTextParser = new();
-    private readonly ImmutableArray<string> _testLines;
-    private readonly Dictionary<string, int> _frequencyDictionary = new()
-    {
-        { "привет", 5 },
-        { "морозный", 7 },
-        { "быстрый", 3 },
-        { "я", 20 },
-        { "человек", 2},
-        { "отчаянно", 8},
-    };
+    private ImmutableArray<string> _testLines;
+    
     private readonly HashSet<char> _russianAlphabet = [];
 
-    public LiteraryTextParserTests()
+    [SetUp]
+    public void SetUp()
     {
         for (var symbol = 'а'; symbol <= 'я'; symbol++)
             _russianAlphabet.Add(symbol);
         _russianAlphabet.Add('ё');
-        
-        var lines = TxtReaderTests.CreateArrayOfWords(_frequencyDictionary);
-        var random = new Random();
-        random.Shuffle(lines);
-        _testLines = [..lines];
+
+        var generator = new GeneratingTestData();
+        _testLines = [..generator.Shuffle(generator.CreateArrayOfWords(GeneratingTestData.FrequencyDictionary))];
     }
     
-    [Test]
-    public void PerformPreprocessing_Text_AllCharactersMustBeInLowercase()
+    [TestCase("привет", "ПрИвЕт", "Привет", "ПРИВЕТ")]
+    public void PerformPreprocessing_Text_AllCharactersMustBeInLowercase(params string[] lines)
     {
-        var lines = new[] { "привет", "ПрИвЕт", "Привет", "ПРИВЕТ" };
-
         var result = _literaryTextParser.Parse(() => lines);
 
         result.IsSuccess.Should().BeTrue();
         CheckCharactersOfWords(result.GetValueOrThrow(), symbol => char.IsLower(symbol) || symbol == '-');
     }
 
-    [Test]
-    public void PerformPreprocessing_Text_OnlyRussianLettersShouldRemainInWords()
+    [TestCase("python?", "java!", "C#", "языки-", "программирования", "пriveт", "из-за")]
+    public void PerformPreprocessing_Text_OnlyRussianLettersShouldRemainInWords(params string[] lines)
     {
-        var lines = new[] { "python?", "java!", "C#", "языки-", "программирования", "пriveт", "из-за" };
-        
         var result = _literaryTextParser.Parse(() => lines);
 
         result.IsSuccess.Should().BeTrue();
@@ -67,6 +54,9 @@ public class LiteraryTextParserTests
         var result = _literaryTextParser.Parse(() => _testLines);
         
         result.IsSuccess.Should().BeTrue();
-        result.GetValueOrThrow().All(wordInfo => _frequencyDictionary[wordInfo.Word] == wordInfo.NumberInText).Should().BeTrue();
+        result.GetValueOrThrow()
+            .All(wordInfo => GeneratingTestData.FrequencyDictionary[wordInfo.Word] == wordInfo.NumberInText)
+            .Should()
+            .BeTrue();
     }
 }
