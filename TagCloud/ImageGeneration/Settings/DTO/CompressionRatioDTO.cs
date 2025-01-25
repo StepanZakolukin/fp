@@ -2,8 +2,8 @@ namespace TagCloud.ImageGeneration.Settings.DTO;
 
 public class CompressionRatioDto : ICrrectnessChecker
 {
-    private const float MaxValue = 10f;
-    private const float MinValue = 0.1f;
+    public const float MaxValue = 10f;
+    public const float MinValue = 0.1f;
     public bool IsCorrect { get; private set; }
     public event Action<ICrrectnessChecker, string>? ValueChanged;
     
@@ -41,8 +41,8 @@ public class CompressionRatioDto : ICrrectnessChecker
 
     public float GetValueOrThrow()
     {
-        if (float.TryParse(_value, out var number))
+        if (float.TryParse(_value, out var number) && CheckCorrectness(number))
             return number;
-        throw new InvalidCastException();
+        throw new InvalidOperationException();
     }
 }
