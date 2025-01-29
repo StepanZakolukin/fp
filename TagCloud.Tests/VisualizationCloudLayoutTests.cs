@@ -52,7 +52,7 @@ public class VisualizationCloudLayoutTests
         string structure, float cloudCompressionRatio)
     {
         var sourceFile = Path.Combine("TestsFiles", fileName);
-        var reader =  _readerProvider.GetReader(sourceFile);
+        var reader =  _readerProvider.GetReader(sourceFile).GetValueOrThrow();
         _parserProvider.SlectedParser = structure;
         var parser = _parserProvider.GetParser();
         var preprocessingStatus = parser(reader);
@@ -95,7 +95,7 @@ public class VisualizationCloudLayoutTests
         string structure, float cloudCompressionRatio)
     {
         var sourceFile = Path.Combine("TestsFiles", fileName);
-        var reader =  _readerProvider.GetReader(sourceFile);
+        var reader =  _readerProvider.GetReader(sourceFile).GetValueOrThrow();
         _parserProvider.SlectedParser = structure;
         var parser = _parserProvider.GetParser();
         var preprocessingStatus = parser(reader);

@@ -71,7 +71,7 @@ public sealed class PushButtonPanel : TagCloudTableLayoutPanel
         if (openFileDialog.ShowDialog() == DialogResult.OK)
         {
             var filePath = openFileDialog.FileName;
-            var reader = _parentForm.ReaderProvider.GetReader(filePath);
+            var reader = _parentForm.ReaderProvider.GetReader(filePath).GetValueOrThrow();
             var parser = _parentForm.ParserProvider.GetParser();
             var status = parser(reader);
 

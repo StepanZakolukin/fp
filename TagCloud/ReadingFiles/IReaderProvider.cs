@@ -1,7 +1,9 @@
+using ErrorHandling;
+
 namespace TagCloud.ReadingFiles;
 
 public interface IReaderProvider
 {
     public IEnumerable<string> GetSupportedExtensions();
-    public Func<IEnumerable<string>> GetReader(string pathToFile);
+    public Result<Func<IEnumerable<string>>> GetReader(string pathToFile);
 }
