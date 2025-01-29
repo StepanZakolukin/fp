@@ -28,21 +28,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Texts\CheckingCount.txt">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
-      <None Update="Texts\Eugene Onegin.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Texts\Morozko.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Texts\EugeneOnegin.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Texts\EmptyFile.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <None Update="TestsFiles\Morozko.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
