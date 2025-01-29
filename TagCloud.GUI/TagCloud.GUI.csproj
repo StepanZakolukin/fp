@@ -18,30 +18,20 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Controls\FirstColumn\FirstColumn.cs">
-        <SubType>Component</SubType>
-      </Compile>
-      <Compile Update="Controls\FirstColumn\ColorSettings.cs">
-        <SubType>Component</SubType>
-      </Compile>
-      <Compile Update="Controls\FirstColumn\FontSettings.cs">
-        <SubType>Component</SubType>
-      </Compile>
-      <Compile Update="Controls\FirstColumn\ConfiguringCloudCompressionRatio.cs">
-        <SubType>Component</SubType>
-      </Compile>
-      <Compile Update="Controls\FirstColumn\SettingUpLayoutAlgorithm.cs">
-        <SubType>Component</SubType>
-      </Compile>
-      <Compile Update="Controls\FirstColumn\ImageSizeSettings.cs">
-        <SubType>Component</SubType>
-      </Compile>
-      <Compile Update="Layout\PushButtonPanel.cs">
-        <SubType>Component</SubType>
-      </Compile>
-      <Compile Update="Layout\SettingsTable.cs">
-        <SubType>Component</SubType>
-      </Compile>
+      <_AllDirectoriesAbove Remove="TagCloudGUI\Layout\FirstColumn" />
+      <_AllDirectoriesAbove Remove="TagCloudGUI\Layout\SecondColumn" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\.editorconfig" />
+      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\FirstColumn\.editorconfig" />
+      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\SecondColumn\.editorconfig" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\.globalconfig" />
+      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\FirstColumn\.globalconfig" />
+      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\SecondColumn\.globalconfig" />
     </ItemGroup>
 
 </Project>
