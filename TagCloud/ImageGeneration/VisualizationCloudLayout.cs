@@ -1,42 +1,52 @@
 ﻿using System.Drawing;
+using ErrorHandling;
+using TagCloud.ImageGeneration.Settings;
 
 namespace TagCloud.ImageGeneration;
 
 public class VisualizationCloudLayout(
-    ISettingsProvider<VisualizationSettingsDto> settingsProvider,
-    IUserInputProvider userInputProvider)
+    RenderingSettings settings)
     : IVisualizationProvider
 {
-    private float coefficient;
+    private float _coefficient;
+    public RenderingSettings Settings { get; } = settings;
 
-    public ISettingsProvider<VisualizationSettingsDto> SettingsProvider { get; } = settingsProvider;
-
-    public IUserInputProvider UserInputProvider { get; } = userInputProvider;
-
-    public Bitmap CreateImage()
+    public Result<Bitmap> CreateImage()
     {
-        UserInputProvider.LayoutProvider.ResetLayout();
-        var center = new Point(SettingsProvider.Settings.ImageSize.Width / 2, SettingsProvider.Settings.ImageSize.Height / 2);
-        UserInputProvider.LayoutProvider.Center = center;
-        var numberOUniqueWords = UserInputProvider.Words.Sum(wordInfo => wordInfo.NumberInText);
-        coefficient = SettingsProvider.Settings.ImageSize.Height * SettingsProvider.Settings.CloudCompressionRatio / numberOUniqueWords;
-        var image = new Bitmap(SettingsProvider.Settings.ImageSize.Width, SettingsProvider.Settings.ImageSize.Height);
-        DrawСloudOfWords(Graphics.FromImage(image));
+        if (!Settings.WordsList.IsCorrect)
+            return Result.Fail<Bitmap>("Загрузите слова для генерации изображения");
+        if (!Settings.IsCorrect)
+            return Result.Fail<Bitmap>("Значения настроек некорректны");
+        
+        var imageSize = Settings.ImageSize.GetValueOrThrow();
+        Settings.LayoutAlgorithm.GetValueOrThrow().ResetLayout();
+        var center = new Point(imageSize.Width / 2, imageSize.Height / 2);
+        Settings.LayoutAlgorithm.GetValueOrThrow().Center = center;
+        var numberOUniqueWords = Settings.WordsList.Value.Sum(wordInfo => wordInfo.NumberInText);
+        _coefficient = imageSize.Height * Settings.CompressionRatio.GetValueOrThrow() / numberOUniqueWords;
+        var image = new Bitmap(imageSize.Width, imageSize.Height);
+        var status = DrawСloudOfWords(Graphics.FromImage(image));
 
-        return image;
+        return status.IsSuccess ? Result.Ok(image) : Result.Fail<Bitmap>(status.Error);
     }
 
-    private void DrawСloudOfWords(Graphics graphics)
+    private ActionStatus DrawСloudOfWords(Graphics graphics)
     {
-        foreach (var word in UserInputProvider.Words)
+        var rectOfCanvas = new RectangleF(Point.Empty, Settings.ImageSize.GetValueOrThrow());
+        
+        foreach (var word in Settings.WordsList.Value)
         {
-            var color = UserInputProvider.ColorProvider.GetColorForWord(word);
-            var height = word.NumberInText * coefficient;
-            var font = new Font(SettingsProvider.Settings.FontFamily, height, GraphicsUnit.Pixel);
+            var color = Settings.ColoringAlgorithm.GetColorProvider.GetColorForWord(word);
+            var height = word.NumberInText * _coefficient;
+            var font = new Font(Settings.FontFamily.GetValueOrThrow(), height, GraphicsUnit.Pixel);
             var size = graphics.MeasureString(word.Word, font);
-            var location = UserInputProvider.LayoutProvider.PutNextRectangle(size);
+            var rectOfWord = Settings.LayoutAlgorithm.GetValueOrThrow().PutNextRectangle(size);
+            if (!rectOfCanvas.Contains(rectOfWord))
+                return ActionStatus.Fail("Не удалось уместить все слова на холст");
 
-            graphics.DrawString(word.Word, font, new SolidBrush(color), location);
+            graphics.DrawString(word.Word, font, new SolidBrush(color), rectOfWord);
         }
+        
+        return ActionStatus.Ok();
     }
 }

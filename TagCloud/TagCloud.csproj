@@ -17,4 +17,8 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ErrorHandling\ErrorHandling.csproj" />
+    </ItemGroup>
+
 </Project>

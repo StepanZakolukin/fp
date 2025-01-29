@@ -1,12 +1,11 @@
 using System.Drawing;
-using TagCloud.CloudLayout;
-using TagCloud.TextProcessing;
+using ErrorHandling;
+using TagCloud.ImageGeneration.Settings;
 
 namespace TagCloud.ImageGeneration;
 
 public interface IVisualizationProvider
 {
-    public ISettingsProvider<VisualizationSettingsDto> SettingsProvider { get; }
-    public IUserInputProvider UserInputProvider { get; }
-    public Bitmap CreateImage();
+    public Result<Bitmap> CreateImage();
+    public RenderingSettings Settings { get; }
 }
