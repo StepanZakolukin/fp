@@ -18,20 +18,20 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_AllDirectoriesAbove Remove="C:\Users\stepa\Desktop\di — копия\TagCloudGUI\Layout\FirstColumn" />
-      <_AllDirectoriesAbove Remove="C:\Users\stepa\Desktop\di — копия\TagCloudGUI\Layout\SecondColumn" />
+      <_AllDirectoriesAbove Remove="TagCloudGUI\Layout\FirstColumn" />
+      <_AllDirectoriesAbove Remove="TagCloudGUI\Layout\SecondColumn" />
     </ItemGroup>
 
     <ItemGroup>
-      <PotentialEditorConfigFiles Remove="C:\Users\stepa\Desktop\di — копия\TagCloudGUI\Layout\.editorconfig" />
-      <PotentialEditorConfigFiles Remove="C:\Users\stepa\Desktop\di — копия\TagCloudGUI\Layout\FirstColumn\.editorconfig" />
-      <PotentialEditorConfigFiles Remove="C:\Users\stepa\Desktop\di — копия\TagCloudGUI\Layout\SecondColumn\.editorconfig" />
+      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\.editorconfig" />
+      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\FirstColumn\.editorconfig" />
+      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\SecondColumn\.editorconfig" />
     </ItemGroup>
 
     <ItemGroup>
-      <GlobalAnalyzerConfigFiles Remove="C:\Users\stepa\Desktop\di — копия\TagCloudGUI\Layout\.globalconfig" />
-      <GlobalAnalyzerConfigFiles Remove="C:\Users\stepa\Desktop\di — копия\TagCloudGUI\Layout\FirstColumn\.globalconfig" />
-      <GlobalAnalyzerConfigFiles Remove="C:\Users\stepa\Desktop\di — копия\TagCloudGUI\Layout\SecondColumn\.globalconfig" />
+      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\.globalconfig" />
+      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\FirstColumn\.globalconfig" />
+      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\SecondColumn\.globalconfig" />
     </ItemGroup>
 
 </Project>
