@@ -6,7 +6,7 @@ namespace TagCloud.Tests;
 [TestFixture]
 public class WordInfoTests
 {
-    private readonly HashSet<string> partsOfSpeech =
+    private readonly HashSet<string> _partsOfSpeech =
     [
         "прилагательное",
         "наречие",
@@ -30,7 +30,7 @@ public class WordInfoTests
         const int count = 1;
         const string word = "привет";
         
-        foreach (var elem in partsOfSpeech)
+        foreach (var elem in _partsOfSpeech)
         {
             var partOfSpeech = elem;
             var initialization = () => new WordInfo(word, partOfSpeech, count);
