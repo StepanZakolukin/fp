@@ -2,18 +2,21 @@ using System.Drawing;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using TagCloud.ImageGeneration;
+using TagCloud.ImageGeneration.Settings;
+using TagCloud.ImageGeneration.Settings.DTO;
+using TagCloud.Parsing;
 using TagCloud.ReadingFiles;
-using TagCloud.TextProcessing;
-using TagCloudGUI.Controls;
 
 namespace TagCloud.Tests;
 
 [TestFixture]
 public class VisualizationCloudLayoutTests
 {
-    private readonly IWordsProvider wordsProvider;
-    private readonly IReaderProvider readerProvider;
-    private readonly IVisualizationProvider visualizationProvider;
+    private const string TypeLiteraryText = "Литературный текст";
+    private const string WordListType = "Список слов (по одному в строке)";
+    private IParserProvider parserProvider;
+    private IReaderProvider readerProvider;
+    private IVisualizationProvider visualizationProvider;
     private readonly HashSet<string> partOfSpeechForFiltering =
     [
         "местоимение-прилагательное",
@@ -23,85 +26,123 @@ public class VisualizationCloudLayoutTests
         "предлог",
         "местоимение-существительное",
     ];
-
-    public VisualizationCloudLayoutTests()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<IReader, TxtReader>();
-        services.AddSingleton<IReaderProvider, ReaderPicker>();
-        services.AddSingleton<IWordsProvider, TextPreprocessing>();
-        services.AddSingleton<IColorProvider, ColorPicker>();
-        services.AddSingleton<IUserInputProvider, UserInputProvider>();
-        services.AddSingleton<IVisualizationProvider, VisualizationCloudLayout>();
-        services.AddSingleton<ISettingsProvider<VisualizationSettingsDto>, VisualizationSettings>();
-        var imageSize = new Size(1080, 1080);
-        services.AddSingleton<VisualizationSettingsDto>(_ => new VisualizationSettingsDto(
-            imageSize,
-            new FontFamily("Arial"),
-            1f));
-        services.AddTransient<ILayoutProvider>(_ => new CircularCloud(new Point(imageSize.Width / 2, imageSize.Height / 2)));
-
-        var provider = services.BuildServiceProvider();
-        
-        wordsProvider = provider.GetService<IWordsProvider>();
-        readerProvider = provider.GetService<IReaderProvider>();
-        visualizationProvider = provider.GetService<IVisualizationProvider>();
-    }
     
     [Test]
     public void VisualizationCloudLayout_ChangeSettings_SettingsShouldChange()
     {
         const float cloudCompressionRatio = 1.5f;
         var imageSize = new Size(1920, 540);
-        var fontFamily = new FontFamily("Calibri");
+        var fontName = "Calibri";
         
-        visualizationProvider.SettingsProvider.Settings.ImageSize = imageSize;
-        visualizationProvider.SettingsProvider.Settings.FontFamily = fontFamily;
-        visualizationProvider.SettingsProvider.Settings.CloudCompressionRatio = cloudCompressionRatio;
+        visualizationProvider.Settings.ImageSize.Width = imageSize.Width.ToString();
+        visualizationProvider.Settings.ImageSize.Height = imageSize.Height.ToString();
+
+        visualizationProvider.Settings.FontFamily.Name = fontName;
+        visualizationProvider.Settings.CompressionRatio.Value = cloudCompressionRatio.ToString();
         
-        visualizationProvider.SettingsProvider.Settings.ImageSize.Should().Be(imageSize);
-        visualizationProvider.SettingsProvider.Settings.FontFamily.Should().Be(fontFamily);
-        visualizationProvider.SettingsProvider.Settings.CloudCompressionRatio.Should().Be(cloudCompressionRatio);
+        visualizationProvider.Settings.ImageSize.GetValueOrThrow().Should().Be(imageSize);
+        visualizationProvider.Settings.FontFamily.Name.Should().Be(fontName);
+        visualizationProvider.Settings.CompressionRatio.GetValueOrThrow().Should().Be(cloudCompressionRatio);
     }
     
-    [TestCase("Morozko.txt", "Morozko.jpeg",
-        ContentStructure.Literary, 2.8f)]
-    [TestCase("GeeseAndSwans.txt", "GeeseAndSwans.png",
-        ContentStructure.Literary, 3.1f)]
-    [TestCase("CheckingCount.txt", "CheckingCount.bmp",
-        ContentStructure.ListOfWords, 0.9f)]
+    [TestCase("Morozko.txt", "Morozko.jpeg", TypeLiteraryText, 2.6f)]
+    [TestCase("GeeseAndSwans.txt", "GeeseAndSwans.png", TypeLiteraryText, 2.8f)]
+    [TestCase("CheckingCount.txt", "CheckingCount.bmp", WordListType, 0.4f)]
     public void CreateImage_ImageSizeMustMatchSettings(string fileName, string imageName,
-        ContentStructure structure, float cloudCompressionRatio)
+        string structure, float cloudCompressionRatio)
     {
         var sourceFile = Path.Combine("TestsFiles", fileName);
-        var words = wordsProvider.PerformPreprocessing(
-            readerProvider.GetReader(sourceFile), structure);
-        visualizationProvider.UserInputProvider.Words = words
+        var reader =  readerProvider.GetReader(sourceFile);
+        parserProvider.SlectedParser = structure;
+        var parser = parserProvider.GetParser();
+        var preprocessingStatus = parser(reader);
+        preprocessingStatus.IsSuccess.Should().BeTrue();
+        var words = preprocessingStatus.GetValueOrThrow()
             .Where(info => !partOfSpeechForFiltering.Contains(info.PartOfSpeach));
-        visualizationProvider.SettingsProvider.Settings.CloudCompressionRatio = cloudCompressionRatio;
+        visualizationProvider.Settings.WordsList.Value = words;
         
-        visualizationProvider.SettingsProvider.Settings.ImageSize = new Size(1080, 1080);
+        visualizationProvider.Settings.CompressionRatio.Value = cloudCompressionRatio.ToString();
+        
+        visualizationProvider.Settings.ImageSize.Width = "1080";
+        visualizationProvider.Settings.ImageSize.Height = "1080";
         CheckSizeMatching(imageName);
-        visualizationProvider.SettingsProvider.Settings.ImageSize = new Size(1280, 720);
+        visualizationProvider.Settings.ImageSize.Width = "1280";
+        visualizationProvider.Settings.ImageSize.Height = "720";
         CheckSizeMatching(imageName);
     }
 
     private void CheckSizeMatching(string imageName)
     {
         var image = GenerateImage(imageName);
-        image.Size.Should().Be(visualizationProvider.SettingsProvider.Settings.ImageSize);
+        image.Size.Should().Be(visualizationProvider.Settings.ImageSize.GetValueOrThrow());
     }
 
     private Bitmap GenerateImage(string imageName)
     {
-        imageName = $"({visualizationProvider.SettingsProvider.Settings.ImageSize.Width}" +
-                    $"x{visualizationProvider.SettingsProvider.Settings.ImageSize.Height})" +
+        imageName = $"({visualizationProvider.Settings.ImageSize.Width}" +
+                    $"x{visualizationProvider.Settings.ImageSize.Height})" +
                     $"{imageName}";
         var pathToImage =  $"../../../Images/{imageName}";
 
-        var image = visualizationProvider.CreateImage();
+        var image = visualizationProvider.CreateImage().GetValueOrThrow();
         image.Save(pathToImage);
 
         return image;
+    }
+
+    [TestCase("CheckingCount.txt", "CheckingCount.bmp", WordListType, 10f)]
+    public void CreateImage_FailedSettings_ImageWillNotBeGenerated(string fileName, string imageName,
+        string structure, float cloudCompressionRatio)
+    {
+        var sourceFile = Path.Combine("TestsFiles", fileName);
+        var reader =  readerProvider.GetReader(sourceFile);
+        parserProvider.SlectedParser = structure;
+        var parser = parserProvider.GetParser();
+        var preprocessingStatus = parser(reader);
+        preprocessingStatus.IsSuccess.Should().BeTrue();
+        visualizationProvider.Settings.WordsList.Value = preprocessingStatus.GetValueOrThrow();
+        
+        var status = visualizationProvider.CreateImage();
+        
+        status.IsSuccess.Should().BeFalse();
+    }
+
+    [Test]
+    public void CreateImage_WordsAreNotLoaded_ImageWillNotBeGenerated()
+    {
+        var status = visualizationProvider.CreateImage();
+        
+        status.IsSuccess.Should().BeFalse();
+    }
+
+    [SetUp]
+    public void PrepareEnvironment()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IReader, TxtReader>();
+        services.AddSingleton<IReaderProvider, ReaderPicker>();
+        services.AddSingleton<IParser, LiteraryTextParser>();
+        services.AddSingleton<IColorProvider, ColorPicker>();
+        services.AddSingleton<IParserProvider, ParserProvider>();
+        services.AddSingleton<IParser, WordListParser>();
+        services.AddSingleton<ILayoutProvider, CircularCloud>();
+        services.AddSingleton<IVisualizationProvider, VisualizationCloudLayout>();
+        services.AddSingleton<LayoutAlgorithmDto>();
+        services.AddSingleton<ColoringAlgorithmDto>();
+        services.AddSingleton<RenderingSettings>();
+        
+        var partialSupplier = services.BuildServiceProvider();
+        services.AddSingleton<RenderingSettings>(_ => new RenderingSettings(
+            new ImageSizeDto(1080, 1080),
+            new FontFamilyDto("Arial"),
+            new CompressionRatioDto(2f),
+            partialSupplier.GetService<LayoutAlgorithmDto>(),
+            partialSupplier.GetService<ColoringAlgorithmDto>(),
+            new WordsListDto()));
+        var provider = services.BuildServiceProvider();
+        
+        parserProvider = provider.GetService<IParserProvider>();
+        readerProvider = provider.GetService<IReaderProvider>();
+        visualizationProvider = provider.GetService<IVisualizationProvider>();
     }
 }

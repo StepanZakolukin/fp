@@ -8,12 +8,12 @@ namespace TagCloud.Tests;
 [TestFixture]
 public class CircularCloudTests
 {
-    private readonly List<RectangleF> listRectangles = [];
+    private readonly List<RectangleF> _listRectangles = [];
 
     [Test]
     public void CircularCloud_CorrectInitialization_NoExceptions()
     {
-        var createAConstructor = () => new CircularCloud(new Point(960, 540));
+        var createAConstructor = () => new CircularCloud();
 
         createAConstructor
             .Should()
@@ -24,7 +24,7 @@ public class CircularCloudTests
     public void PutNextRectangle_RandomSizes_MustBeRightSize()
     {
         var random = new Random();
-        var placemarker = new CircularCloud(new Point(960, 540));
+        var placemarker = new CircularCloud();
 
         for (var i = 0; i < 50; i++)
         {
@@ -41,7 +41,7 @@ public class CircularCloudTests
     public void PutNextRectangle_RandomSizes_ShouldNotIntersect()
     {
         var random = new Random();
-        var placemarker = new CircularCloud(new Point(960, 540));
+        var placemarker = new CircularCloud();
 
         for (var i = 0; i < 100; i++)
         {
@@ -49,11 +49,11 @@ public class CircularCloudTests
 
             var rectangle = placemarker.PutNextRectangle(new SizeF(width, random.Next(width / 6, width / 3)));
 
-            listRectangles.Any(rect => rect.IntersectsWith(rectangle))
+            _listRectangles.Any(rect => rect.IntersectsWith(rectangle))
                 .Should()
                 .BeFalse("Прямоугольники не должны пересекаться");
 
-            listRectangles.Add(rectangle);
+            _listRectangles.Add(rectangle);
         }
     }
 
@@ -62,7 +62,7 @@ public class CircularCloudTests
     {
         var call = () =>
         {
-            var placemarker = new CircularCloud(new Point(500, 500));
+            var placemarker = new CircularCloud();
             placemarker.PutNextRectangle(new SizeF(10, 50));
             placemarker.PutNextRectangle(new SizeF(0, 50));
             placemarker.PutNextRectangle(new SizeF(10, 0));
