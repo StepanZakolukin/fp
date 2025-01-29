@@ -9,5 +9,6 @@ public sealed class TagCloudButton : Button
         Margin = new Padding(0);
         Height = 40;
         TextAlign = ContentAlignment.TopCenter;
+        Font = new Font(Font.FontFamily, 20, FontStyle.Bold, GraphicsUnit.Pixel);
     }
 }

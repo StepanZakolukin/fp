@@ -6,6 +6,6 @@ public sealed class TagCloudLabel : Label
     {
         Text = text;
         Dock = DockStyle.Fill;
-        Margin = new Padding(0, 0, 0, 14);
+        Margin = new Padding(0, 0, 0, 5);
     }
 }

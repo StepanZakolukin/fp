@@ -1,18 +1,18 @@
 ﻿using System.Drawing;
 
-namespace TagCloud.CloudLayout;
+namespace TagCloud.ImageGeneration;
 
-public class CircularCloud(Point center) : ILayoutProvider
+public class CircularCloud : ILayoutProvider
 {
     private const double AngleChangeStep = Math.PI / 180;
 
-    private readonly LinkedList<RectangleF> cloudOfRectangles = [];
+    private readonly LinkedList<RectangleF> _cloudOfRectangles = [];
     private int DistanceBetweenTurns { get; set; } = 30;
     private int InitialRadiusOfSpiral { get; set; }
     private double AngleOfRotationInRadians { get; set; }
     public string Name => "Круглая форма";
 
-    public Point Center { get; set; } = center;
+    public Point Center { get; set; }
 
     public RectangleF PutNextRectangle(SizeF rectangleSize)
     {
@@ -20,17 +20,17 @@ public class CircularCloud(Point center) : ILayoutProvider
         if (halfOfMinSide > 0)
             DistanceBetweenTurns = Math.Min(DistanceBetweenTurns, halfOfMinSide);
 
-        if (cloudOfRectangles.Count == 0) InitialRadiusOfSpiral = halfOfMinSide;
+        if (_cloudOfRectangles.Count == 0) InitialRadiusOfSpiral = halfOfMinSide;
 
         var rectangle = ChooseLocationForRectangle(rectangleSize);
-        cloudOfRectangles.AddFirst(rectangle);
+        _cloudOfRectangles.AddFirst(rectangle);
 
         return rectangle;
     }
 
     public void ResetLayout()
     {
-        cloudOfRectangles.Clear();
+        _cloudOfRectangles.Clear();
         AngleOfRotationInRadians = 0;
     }
 
@@ -39,7 +39,7 @@ public class CircularCloud(Point center) : ILayoutProvider
         var currentPoint = GetNewPoint();
         var rectangle = GetNewRectangle(currentPoint, rectangleSize);
 
-        while (cloudOfRectangles.Any(rect => rect.IntersectsWith(rectangle)))
+        while (_cloudOfRectangles.Any(rect => rect.IntersectsWith(rectangle)))
         {
             AngleOfRotationInRadians += AngleChangeStep;
             currentPoint = GetNewPoint();

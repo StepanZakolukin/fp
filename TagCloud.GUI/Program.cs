@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using TagCloud.CloudLayout;
 using TagCloud.ImageGeneration;
+using TagCloud.ImageGeneration.Settings;
+using TagCloud.ImageGeneration.Settings.DTO;
+using TagCloud.Parsing;
 using TagCloud.ReadingFiles;
-using TagCloud.TextProcessing;
 
 namespace TagCloudGUI;
 
@@ -13,20 +14,26 @@ internal static class Program
     {
         ApplicationConfiguration.Initialize();
         var services = new ServiceCollection();
+        services.AddSingleton<LayoutAlgorithmDto>();
         services.AddSingleton<IReader, TxtReader>();
-        services.AddSingleton<IReaderProvider, ReaderPicker>();
+        services.AddSingleton<ColoringAlgorithmDto>();
+        services.AddSingleton<IParser, WordListParser>();
+        services.AddSingleton<IParser, LiteraryTextParser>();
         services.AddSingleton<IColorProvider, ColorPicker>();
+        services.AddSingleton<IParserProvider, ParserProvider>();
+        services.AddSingleton<IReaderProvider, ReaderPicker>();
+        services.AddTransient<ILayoutProvider, CircularCloud>();
         services.AddSingleton<Form, TagCloudConfigurationForm>();
-        services.AddSingleton<IWordsProvider, TextPreprocessing>();
-        services.AddSingleton<IUserInputProvider, UserInputProvider>();
         services.AddSingleton<IVisualizationProvider, VisualizationCloudLayout>();
-        services.AddSingleton<ISettingsProvider<VisualizationSettingsDto>, VisualizationSettings>();
-        var imageSize = new Size(1080, 1080);
-        services.AddSingleton<VisualizationSettingsDto>(_ => new VisualizationSettingsDto(
-            imageSize,
-            new FontFamily("Arial"),
-            1f));
-        services.AddTransient<ILayoutProvider>(_ => new CircularCloud(new Point(imageSize.Width / 2, imageSize.Height / 2)));
+        
+        var partialSupplier = services.BuildServiceProvider();
+        services.AddSingleton<RenderingSettings>(_ => new RenderingSettings(
+            new ImageSizeDto(1080, 1080),
+            new FontFamilyDto("Arial"),
+            new CompressionRatioDto(2f),
+            partialSupplier.GetService<LayoutAlgorithmDto>(),
+            partialSupplier.GetService<ColoringAlgorithmDto>(),
+            new WordsListDto()));
 
         var provider = services.BuildServiceProvider();
         var form = provider.GetService<Form>();

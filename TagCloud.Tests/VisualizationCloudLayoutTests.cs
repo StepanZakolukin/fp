@@ -1,7 +1,6 @@
 using System.Drawing;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using TagCloud.CloudLayout;
 using TagCloud.ImageGeneration;
 using TagCloud.ReadingFiles;
 using TagCloud.TextProcessing;

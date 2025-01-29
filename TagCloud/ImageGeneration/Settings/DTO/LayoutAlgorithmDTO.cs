@@ -1,5 +1,3 @@
-using TagCloud.CloudLayout;
-
 namespace TagCloud.ImageGeneration.Settings.DTO;
 
 public class LayoutAlgorithmDto : CrrectnessChecker

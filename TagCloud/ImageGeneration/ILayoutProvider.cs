@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace TagCloud.CloudLayout;
+namespace TagCloud.ImageGeneration;
 
 public interface ILayoutProvider
 {

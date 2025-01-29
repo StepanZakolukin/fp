@@ -1,23 +1,22 @@
-namespace TagCloudGUI.Controls;
+using TagCloudGUI.Controls;
+
+namespace TagCloudGUI.Layout.SecondColumn;
 
 public class PartOfSpeechFilter : TagCloudTreeView
 {
     public PartOfSpeechFilter(TagCloudConfigurationForm parentForm)
         : base("Исключить части речи:", parentForm)
     {
-        TreeView.Margin = new Padding(0, 0, 0, 14);
-
-        parentForm.TextIsUploaded += FillTreeView;
+        Margin = new Padding(0, 0, 0, 8);
+        PushButtonPanel.TextIsUploaded += FillTreeView;
     }
 
     private void FillTreeView()
     {
-        var partsOfSpeech = ParentForm.Words?
+        var partsOfSpeech = ParentForm.VisualizationProvider.Settings.WordsList.Value
             .Select(wordInfo => wordInfo.PartOfSpeach)
             .ToHashSet();
-
         TreeView.Nodes.Clear();
-
         foreach (var partOfSpeech in partsOfSpeech)
             TreeView.Nodes.Add(partOfSpeech);
     }

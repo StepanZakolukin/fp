@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using FluentAssertions;
 using FluentAssertions.Extensions;
-using TagCloud.CloudLayout;
+using TagCloud.ImageGeneration;
 
 namespace TagCloud.Tests;
 
