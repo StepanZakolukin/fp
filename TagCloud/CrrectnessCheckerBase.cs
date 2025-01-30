@@ -1,6 +1,6 @@
 namespace TagCloud;
 
-public abstract class CrrectnessChecker : ICrrectnessChecker
+public abstract class CrrectnessCheckerBase : ICrrectnessChecker
 {
     public bool IsCorrect { get; private set; }
     public event Action<ICrrectnessChecker, string>? ValueChanged;

@@ -3,7 +3,7 @@ using System.Drawing.Text;
 
 namespace TagCloud.ImageGeneration.Settings.DTO;
 
-public class FontFamilyDto : CrrectnessChecker
+public class FontFamilyDto : CrrectnessCheckerBase
 {
     private readonly HashSet<string> _availableFontFamilies = new InstalledFontCollection().Families
         .Select(family => family.Name)

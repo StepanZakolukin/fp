@@ -3,7 +3,7 @@ using TagCloud.TextProcessing;
 
 namespace TagCloud.Parsing;
 
-public class ParserProvider : CrrectnessChecker, IParserProvider
+public class ParserProvider : CrrectnessCheckerBase, IParserProvider
 {
     private readonly Dictionary<string, IParser> _parsers;
     

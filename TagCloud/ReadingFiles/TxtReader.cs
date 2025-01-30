@@ -4,12 +4,12 @@ namespace TagCloud.ReadingFiles;
 
 public class TxtReader : IReader
 {
-    public ImmutableHashSet<string> AvailableExtensions { get; } = ImmutableHashSet.Create<string>(".txt");
+    public ImmutableHashSet<string> SupportedExtensions { get; } = ImmutableHashSet.Create<string>(".txt");
 
     public IEnumerable<string> ReadTextLineByLine(string pathToFile)
     {
         var fileExtension = Path.GetExtension(pathToFile);
-        if (!AvailableExtensions.Contains(fileExtension))
+        if (!SupportedExtensions.Contains(fileExtension))
             throw new IOException($"{nameof(TxtReader)} не поддерживает {fileExtension} формат файлов");
         if (!Path.Exists(pathToFile))
             throw new FileNotFoundException($"Файл {pathToFile} не существует или поврежден");

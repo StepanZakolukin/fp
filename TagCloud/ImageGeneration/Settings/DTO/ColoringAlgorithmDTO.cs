@@ -1,6 +1,6 @@
 namespace TagCloud.ImageGeneration.Settings.DTO;
 
-public class ColoringAlgorithmDto : CrrectnessChecker
+public class ColoringAlgorithmDto : CrrectnessCheckerBase
 {
     private readonly Dictionary<string, IColorProvider> _coloringAlgorithms;
     public IEnumerable<string> NamesOfColoringAlgorithms => _coloringAlgorithms.Keys;

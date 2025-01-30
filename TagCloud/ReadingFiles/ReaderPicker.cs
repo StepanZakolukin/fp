@@ -10,7 +10,7 @@ public class ReaderPicker : IReaderProvider
     {
         ArgumentNullException.ThrowIfNull(readers);
         foreach (var reader in readers)
-        foreach (var extension in reader.AvailableExtensions)
+        foreach (var extension in reader.SupportedExtensions)
             _readers[extension] = reader;
     }
 

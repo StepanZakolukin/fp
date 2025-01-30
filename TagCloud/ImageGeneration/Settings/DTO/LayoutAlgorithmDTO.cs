@@ -1,6 +1,6 @@
 namespace TagCloud.ImageGeneration.Settings.DTO;
 
-public class LayoutAlgorithmDto : CrrectnessChecker
+public class LayoutAlgorithmDto : CrrectnessCheckerBase
 {
     private readonly Dictionary<string, ILayoutProvider> _layoutAlgorithms;
     public IEnumerable<string> NamesOfLayoutAlgorithms => _layoutAlgorithms.Keys;
