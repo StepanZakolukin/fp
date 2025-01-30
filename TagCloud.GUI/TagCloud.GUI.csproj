@@ -16,22 +16,4 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <_AllDirectoriesAbove Remove="TagCloudGUI\Layout\FirstColumn" />
-      <_AllDirectoriesAbove Remove="TagCloudGUI\Layout\SecondColumn" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\.editorconfig" />
-      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\FirstColumn\.editorconfig" />
-      <PotentialEditorConfigFiles Remove="TagCloudGUI\Layout\SecondColumn\.editorconfig" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\.globalconfig" />
-      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\FirstColumn\.globalconfig" />
-      <GlobalAnalyzerConfigFiles Remove="TagCloudGUI\Layout\SecondColumn\.globalconfig" />
-    </ItemGroup>
-
 </Project>
