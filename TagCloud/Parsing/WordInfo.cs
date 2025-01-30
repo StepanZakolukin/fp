@@ -1,8 +1,10 @@
-namespace TagCloud.TextProcessing;
+using ErrorHandling;
+
+namespace TagCloud.Parsing;
 
 public record WordInfo
 {
-    private readonly HashSet<string> partsOfSpeech =
+    private static readonly HashSet<string> PartsOfSpeech =
     [
         "прилагательное",
         "наречие",
@@ -21,13 +23,23 @@ public record WordInfo
         "нет данных"
     ];
 
-    public WordInfo(string word, string partOfSpeach, int numberInText)
+    private WordInfo(string word, string partOfSpeach, int numberInText)
     {
         Word = word;
-        if (!partsOfSpeech.Contains(partOfSpeach))
-            throw new ArgumentException("Некорректная чаcть речи", nameof(partOfSpeach));
         PartOfSpeach = partOfSpeach;
         NumberInText = numberInText;
+    }
+    
+    public static Result<WordInfo> Create(string word, int numberInText)
+    {
+        return Result.Ok(new WordInfo(word, "нет данных", numberInText));
+    }
+
+    public static Result<WordInfo> Create(string word, string partOfSpeach, int numberInText)
+    {
+        if (!PartsOfSpeech.Contains(partOfSpeach))
+            return Result.Fail<WordInfo>($"неизвестная чаcть речи: {partOfSpeach}");
+        return Result.Ok(new WordInfo(word, partOfSpeach, numberInText));
     }
 
     public string Word { get; }

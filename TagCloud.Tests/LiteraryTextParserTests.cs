@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using FluentAssertions;
 using TagCloud.Parsing;
-using TagCloud.TextProcessing;
 
 namespace TagCloud.Tests;
 

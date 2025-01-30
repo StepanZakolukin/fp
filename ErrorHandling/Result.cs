@@ -73,7 +73,6 @@ public static class Result
         if (input.IsSuccess) return new Result<TInput>(input.Error, input.Value);
         handleError(input.Error);
         return Fail<TInput>(input.Error);
-
     }
 
     public static Result<TInput> ReplaceError<TInput>(this Result<TInput> input, Func<string, string> replacement)

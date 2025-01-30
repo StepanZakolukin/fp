@@ -1,4 +1,4 @@
-using TagCloud.TextProcessing;
+using TagCloud.Parsing;
 
 namespace TagCloud.ImageGeneration.Settings.DTO;
 

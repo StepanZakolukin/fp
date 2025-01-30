@@ -1,5 +1,5 @@
 using FluentAssertions;
-using TagCloud.TextProcessing;
+using TagCloud.Parsing;
 
 namespace TagCloud.Tests;
 
@@ -25,7 +25,7 @@ public class WordInfoTests
     ];
     
     [Test]
-    public void WordInfo_CorrectPartsOfSpeech_NoExceptions()
+    public void WordInfo_CorrectPartsOfSpeech()
     {
         const int count = 1;
         const string word = "привет";
@@ -33,13 +33,13 @@ public class WordInfoTests
         foreach (var elem in _partsOfSpeech)
         {
             var partOfSpeech = elem;
-            var initialization = () => new WordInfo(word, partOfSpeech, count);
-            initialization.Should().NotThrow();
+            var res = WordInfo.Create(word, partOfSpeech, count);
+            res.IsSuccess.Should().BeTrue();
         }
     }
     
     [Test]
-    public void WordInfo_IncorrectPartsOfSpeech_ThrowArgumentExceptionExceptions()
+    public void WordInfo_IncorrectPartsOfSpeech()
     {
         const int count = 1;
         const string word = "привет";
@@ -48,8 +48,8 @@ public class WordInfoTests
         foreach (var elem in incorrectPartsOfSpeech)
         {
             var partOfSpeech = elem;
-            var initialization = () => new WordInfo(word, partOfSpeech, count);
-            initialization.Should().Throw<ArgumentException>();
+            var res = WordInfo.Create(word, partOfSpeech, count);
+            res.IsSuccess.Should().BeFalse();
         }
     }
 }

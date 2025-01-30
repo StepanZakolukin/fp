@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text;
 using ErrorHandling;
-using TagCloud.TextProcessing;
 
 namespace TagCloud.Parsing;
 
@@ -63,6 +62,7 @@ public class LiteraryTextParser : IParser
     
     public Result<WordInfo[]> Parse(Func<IEnumerable<string>> getTextLineByLine)
     {
+        var result = new List<WordInfo>();
         var textInfo = ParseText(getTextLineByLine);
         var countingDictionary = new Dictionary<Tuple<string, string>, int>();
 
@@ -75,12 +75,17 @@ public class LiteraryTextParser : IParser
                 countingDictionary[wordAndPartOfSpeech]++;
         }
 
-        var result = countingDictionary
-            .Select(pair => new WordInfo(
+        foreach (var pair in countingDictionary)
+        {
+            var res = WordInfo.Create(
                 pair.Key.Item1,
                 _decryptionGrammems[pair.Key.Item2],
-                pair.Value))
-            .ToArray();
-        return result.Length == 0 ? Result.Fail<WordInfo[]>("Файл оказался пустым") : Result.Ok(result);
+                pair.Value);
+            if (!res.IsSuccess)
+                return Result.Fail<WordInfo[]>($"Встретилась {res.Error}");
+            result.Add(res.GetValueOrThrow());
+        }
+
+        return result.Count == 0 ? Result.Fail<WordInfo[]>("Файл оказался пустым") : Result.Ok(result.ToArray());
     }
 }

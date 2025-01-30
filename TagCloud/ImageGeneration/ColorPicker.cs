@@ -1,5 +1,5 @@
 using System.Drawing;
-using TagCloud.TextProcessing;
+using TagCloud.Parsing;
 
 namespace TagCloud.ImageGeneration;
 
