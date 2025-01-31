@@ -20,9 +20,12 @@ public class ReaderPicker : IReaderProvider
     {
         var fileExtension = Path.GetExtension(pathToFile);
         if (!_readers.TryGetValue(fileExtension, out var reader))
-            return Result.Fail<Func<IEnumerable<string>>>($"Не найден подходящий {nameof(IReader)} для файла с расширением {fileExtension}");
-        if (!Path.Exists(pathToFile))
-            return Result.Fail<Func<IEnumerable<string>>>($"Файл {pathToFile} не существует или поврежден");
-        return Result.Ok<Func<IEnumerable<string>>>(() => reader.ReadTextLineByLine(pathToFile));
+            return Result.Fail<Func<IEnumerable<string>>>($"Не найден подходящий {nameof(IReader)} " +
+                                                          $"для файла с расширением {fileExtension}");
+        
+        var validationResult = reader.PerformFileReadValidation(pathToFile);
+        return !validationResult.IsSuccess
+            ? Result.Fail<Func<IEnumerable<string>>>(validationResult.Error)
+            : Result.Ok<Func<IEnumerable<string>>>(() => reader.ReadTextLineByLine(pathToFile));
     }
 }

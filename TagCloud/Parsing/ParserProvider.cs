@@ -23,10 +23,7 @@ public class ParserProvider : CrrectnessCheckerBase, IParserProvider
 
     public IEnumerable<string> GetTypesParsers => _parsers.Keys;
 
-    public Func<Func<IEnumerable<string>>, Result<WordInfo[]>>? GetParser()
-    {
-        return IsCorrect ? _parsers[_selectedParser].Parse : null; 
-    }
+    public ParsingFunction? GetParser() => IsCorrect ? new ParsingFunction(_parsers[_selectedParser].Parse) : null;
 
     public ParserProvider(IEnumerable<IParser> parsers, IParser defaultParser)
     {

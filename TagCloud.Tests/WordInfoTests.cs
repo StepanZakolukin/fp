@@ -12,10 +12,9 @@ public class WordInfoTests
         const int count = 1;
         const string word = "привет";
         
-        foreach (var elem in WordInfo.PartsOfSpeech)
+        foreach (var res in WordInfo.PartsOfSpeech
+                     .Select(partOfSpeech => WordInfo.Create(word, partOfSpeech, count)))
         {
-            var partOfSpeech = elem;
-            var res = WordInfo.Create(word, partOfSpeech, count);
             res.IsSuccess.Should().BeTrue();
         }
     }
@@ -27,10 +26,9 @@ public class WordInfoTests
         const string word = "привет";
         var incorrectPartsOfSpeech = new[] { "0", "999", "a", word, "причастие", "деепричастие", "слово" };
         
-        foreach (var elem in incorrectPartsOfSpeech)
+        foreach (var res in incorrectPartsOfSpeech
+                     .Select(partOfSpeech => WordInfo.Create(word, partOfSpeech, count)))
         {
-            var partOfSpeech = elem;
-            var res = WordInfo.Create(word, partOfSpeech, count);
             res.IsSuccess.Should().BeFalse();
         }
     }

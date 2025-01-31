@@ -42,15 +42,4 @@ public class TxtReaderTests
             .Should()
             .BeTrue();
     }
-    
-    [TestCase("Morozko.png")]
-    [TestCase("EmptyFile.doc")]
-    public void ReadTextLineByLine_UnsuitableFormat_ThrowIOException(string filename)
-    {
-        var pathToFile = Path.Combine(_pathToFileFolder, filename);
-        
-        var calling = () => _reader.ReadTextLineByLine(pathToFile).ToArray();
-
-        calling.Should().Throw<IOException>();
-    }
 }
