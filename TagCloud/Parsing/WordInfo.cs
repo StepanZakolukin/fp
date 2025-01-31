@@ -1,10 +1,11 @@
+using System.Collections.Immutable;
 using ErrorHandling;
 
 namespace TagCloud.Parsing;
 
 public record WordInfo
 {
-    private static readonly HashSet<string> PartsOfSpeech =
+    public static ImmutableHashSet<string> PartsOfSpeech { get; } =
     [
         "прилагательное",
         "наречие",
