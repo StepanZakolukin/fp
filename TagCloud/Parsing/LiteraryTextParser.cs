@@ -71,6 +71,7 @@ public class LiteraryTextParser : IParser
     
     public Result<WordInfo[]> Parse(Func<IEnumerable<string>> getTextLineByLine)
     {
+        _countingDictionary.Clear();
         var result = new List<WordInfo>();
         var parsingStatus = ParseText(getTextLineByLine);
         if (!parsingStatus.IsSuccess)
