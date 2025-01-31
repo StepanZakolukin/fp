@@ -1,4 +1,4 @@
-using ErrorHandling;
+using Castle.Core.Internal;
 
 namespace TagCloud.Parsing;
 
@@ -13,7 +13,7 @@ public class ParserProvider : CrrectnessCheckerBase, IParserProvider
         set
         {
             _selectedParser = value;
-            if (_selectedParser is "" or null)
+            if (_selectedParser.IsNullOrEmpty())
                 ChangeValue(false, "Значение не должно быть пустым");
             else if (!_parsers.ContainsKey(_selectedParser))
                 ChangeValue(false, "Тип содержания не найден");
