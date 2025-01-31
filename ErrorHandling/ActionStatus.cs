@@ -1,6 +1,6 @@
 namespace ErrorHandling;
 
-public struct ActionStatus(string error)
+public readonly struct ActionStatus(string error)
 {
     public string Error { get; } = error;
     public bool IsSuccess => Error == null;

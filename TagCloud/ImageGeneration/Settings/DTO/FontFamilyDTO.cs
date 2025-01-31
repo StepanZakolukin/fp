@@ -1,9 +1,10 @@
 using System.Drawing;
 using System.Drawing.Text;
+using Castle.Core.Internal;
 
 namespace TagCloud.ImageGeneration.Settings.DTO;
 
-public class FontFamilyDto : CrrectnessChecker
+public class FontFamilyDto : CrrectnessCheckerBase
 {
     private readonly HashSet<string> _availableFontFamilies = new InstalledFontCollection().Families
         .Select(family => family.Name)
@@ -24,7 +25,7 @@ public class FontFamilyDto : CrrectnessChecker
         set
         {
             _name = value;
-            if (value is "" or null)
+            if (value.IsNullOrEmpty())
                 ChangeValue(false, "Значение не должно быть пустым");
             else if (!_availableFontFamilies.Contains(value))
                 ChangeValue(false, $"Шрифт {value} не найден");
@@ -34,7 +35,7 @@ public class FontFamilyDto : CrrectnessChecker
 
     public FontFamilyDto(string fontName)
     {
-        if (fontName is "" or null)
+        if (fontName.IsNullOrEmpty())
             throw new ArgumentException("Значение не должно быть пустым", nameof(fontName));
         if (!_availableFontFamilies.Contains(fontName))
             throw new ArgumentException($"Шрифт {fontName} не найден в списке системных шрифтов");

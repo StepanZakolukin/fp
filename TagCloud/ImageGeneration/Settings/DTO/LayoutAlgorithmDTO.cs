@@ -1,6 +1,8 @@
+using Castle.Core.Internal;
+
 namespace TagCloud.ImageGeneration.Settings.DTO;
 
-public class LayoutAlgorithmDto : CrrectnessChecker
+public class LayoutAlgorithmDto : CrrectnessCheckerBase
 {
     private readonly Dictionary<string, ILayoutProvider> _layoutAlgorithms;
     public IEnumerable<string> NamesOfLayoutAlgorithms => _layoutAlgorithms.Keys;
@@ -18,7 +20,7 @@ public class LayoutAlgorithmDto : CrrectnessChecker
         set
         {
             _selectedAlgorithm = value;
-            if (_selectedAlgorithm is "" or null)
+            if (_selectedAlgorithm.IsNullOrEmpty())
                 ChangeValue(false, "Значение не должно быть пустым");
             else if (!_layoutAlgorithms.ContainsKey(value))
                 ChangeValue(false, "Алгоритм раскладки не найден");

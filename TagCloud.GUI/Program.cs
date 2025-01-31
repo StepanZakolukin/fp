@@ -25,7 +25,7 @@ internal static class Program
         services.AddTransient<ILayoutProvider, CircularCloud>();
         services.AddSingleton<Form, TagCloudConfigurationForm>();
         services.AddSingleton<IVisualizationProvider, VisualizationCloudLayout>();
-        
+
         var partialSupplier = services.BuildServiceProvider();
         services.AddSingleton<RenderingSettings>(_ => new RenderingSettings(
             new ImageSizeDto(1080, 1080),
@@ -39,8 +39,4 @@ internal static class Program
         var form = provider.GetService<Form>();
         Application.Run(form);
     }
-}
-
-internal class WordListDto
-{
 }

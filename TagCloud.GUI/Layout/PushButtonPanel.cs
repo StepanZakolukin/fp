@@ -68,20 +68,23 @@ public sealed class PushButtonPanel : TagCloudTableLayoutPanel
             RestoreDirectory = true
         };
 
-        if (openFileDialog.ShowDialog() == DialogResult.OK)
+        if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+        var filePath = openFileDialog.FileName;
+        var requestResult = _parentForm.ReaderProvider.GetReader(filePath);
+        if (!requestResult.IsSuccess)
         {
-            var filePath = openFileDialog.FileName;
-            var reader = _parentForm.ReaderProvider.GetReader(filePath).GetValueOrThrow();
-            var parser = _parentForm.ParserProvider.GetParser();
-            var status = parser(reader);
-
-            if (status.IsSuccess)
-            {
-                _visualizationProvider.Settings.WordsList.Value = status.GetValueOrThrow();
-                TextIsUploaded?.Invoke();
-            }
-            SecondColumn.SecondColumn.ErrorMessage.Text = status.Error;
+            SecondColumn.SecondColumn.ErrorMessage.Text = requestResult.Error;
+            return;
         }
+        var reader = requestResult.GetValueOrThrow();
+        var parser = _parentForm.ParserProvider.GetParser();
+        var status = parser(reader);
+        if (status.IsSuccess)
+        {
+            _visualizationProvider.Settings.WordsList.Value = status.GetValueOrThrow();
+            TextIsUploaded?.Invoke();
+        }
+        SecondColumn.SecondColumn.ErrorMessage.Text = status.Error;
     }
 
     private void GenerateImage(object? sender, EventArgs e)

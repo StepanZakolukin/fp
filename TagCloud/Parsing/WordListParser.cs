@@ -4,7 +4,6 @@ namespace TagCloud.Parsing;
 
 public class WordListParser : IParser
 {
-    private const string PartOfSpeach = "нет данных";
     public string TypeOfParsing => "Список слов (по одному в строке)";
     
     public Result<WordInfo[]> Parse(Func<IEnumerable<string>> getTextLineByLine)
@@ -23,7 +22,7 @@ public class WordListParser : IParser
         }
         
         var result =  countingDictionary
-            .Select(pair => new WordInfo(pair.Key, PartOfSpeach, pair.Value))
+            .Select(pair => WordInfo.Create(pair.Key, pair.Value).GetValueOrThrow())
             .ToArray();
         
         return result.Length == 0 ? Result.Fail<WordInfo[]>("Файл оказался пустым") : Result.Ok(result);

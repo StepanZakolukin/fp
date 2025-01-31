@@ -27,36 +27,6 @@ public class VisualizationCloudLayoutTests
         "местоимение-существительное",
     ];
     
-    [SetUp]
-    public void PrepareEnvironment()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<IReader, TxtReader>();
-        services.AddSingleton<IReaderProvider, ReaderPicker>();
-        services.AddSingleton<IParser, LiteraryTextParser>();
-        services.AddSingleton<IColorProvider, ColorPicker>();
-        services.AddSingleton<IParserProvider, ParserProvider>();
-        services.AddSingleton<IParser, WordListParser>();
-        services.AddSingleton<ILayoutProvider, CircularCloud>();
-        services.AddSingleton<IVisualizationProvider, VisualizationCloudLayout>();
-        services.AddSingleton<LayoutAlgorithmDto>();
-        services.AddSingleton<ColoringAlgorithmDto>();
-        
-        var partialSupplier = services.BuildServiceProvider();
-        services.AddSingleton<RenderingSettings>(_ => new RenderingSettings(
-            new ImageSizeDto(1080, 1080),
-            new FontFamilyDto("Arial"),
-            new CompressionRatioDto(2f),
-            partialSupplier.GetService<LayoutAlgorithmDto>(),
-            partialSupplier.GetService<ColoringAlgorithmDto>(),
-            new WordsListDto()));
-        var provider = services.BuildServiceProvider();
-        
-        _parserProvider = provider.GetService<IParserProvider>();
-        _readerProvider = provider.GetService<IReaderProvider>();
-        _visualizationProvider = provider.GetService<IVisualizationProvider>();
-    }
-    
     [Test]
     public void VisualizationCloudLayout_ChangeSettings_SettingsShouldChange()
     {
@@ -143,5 +113,36 @@ public class VisualizationCloudLayoutTests
         var status = _visualizationProvider.CreateImage();
         
         status.IsSuccess.Should().BeFalse();
+    }
+
+    [SetUp]
+    public void PrepareEnvironment()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IReader, TxtReader>();
+        services.AddSingleton<IReaderProvider, ReaderPicker>();
+        services.AddSingleton<IParser, LiteraryTextParser>();
+        services.AddSingleton<IColorProvider, ColorPicker>();
+        services.AddSingleton<IParserProvider, ParserProvider>();
+        services.AddSingleton<IParser, WordListParser>();
+        services.AddSingleton<ILayoutProvider, CircularCloud>();
+        services.AddSingleton<IVisualizationProvider, VisualizationCloudLayout>();
+        services.AddSingleton<LayoutAlgorithmDto>();
+        services.AddSingleton<ColoringAlgorithmDto>();
+        services.AddSingleton<RenderingSettings>();
+        
+        var partialSupplier = services.BuildServiceProvider();
+        services.AddSingleton<RenderingSettings>(_ => new RenderingSettings(
+            new ImageSizeDto(1080, 1080),
+            new FontFamilyDto("Arial"),
+            new CompressionRatioDto(2f),
+            partialSupplier.GetService<LayoutAlgorithmDto>(),
+            partialSupplier.GetService<ColoringAlgorithmDto>(),
+            new WordsListDto()));
+        var provider = services.BuildServiceProvider();
+        
+        _parserProvider = provider.GetService<IParserProvider>();
+        _readerProvider = provider.GetService<IReaderProvider>();
+        _visualizationProvider = provider.GetService<IVisualizationProvider>();
     }
 }

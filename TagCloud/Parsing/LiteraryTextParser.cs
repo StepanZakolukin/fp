@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using Castle.Core.Internal;
 using ErrorHandling;
 
 namespace TagCloud.Parsing;
@@ -7,6 +8,15 @@ namespace TagCloud.Parsing;
 public class LiteraryTextParser : IParser
 {
     public string TypeOfParsing => "Литературный текст";
+    private readonly ProcessStartInfo _startInfo = new()
+    {
+        CreateNoWindow = true,
+        UseShellExecute = false,
+        RedirectStandardError = true,
+        RedirectStandardInput = false,
+        RedirectStandardOutput = true,
+        FileName = "Parsing/Mystem.exe",
+    };
     private readonly Dictionary<string, string> _decryptionGrammems = new()
     {
         { "A", "прилагательное" },
@@ -24,33 +34,32 @@ public class LiteraryTextParser : IParser
         { "SPRO", "местоимение-существительное" },
         { "V", "глагол" }
     };
+    private readonly Dictionary<Tuple<string, string>, int> _countingDictionary = new();
 
-    private IEnumerable<string> ParseText(Func<IEnumerable<string>> getTextLineByLine)
+    private ActionStatus ParseText(Func<IEnumerable<string>> getTextLineByLine)
     {
         var tempFile = Path.ChangeExtension(Path.GetTempFileName(), ".txt");
         WriteLinesToFile(getTextLineByLine(), tempFile);
+        _startInfo.Arguments = $"-ling {tempFile}";
 
-        var process = new Process
+        using var process = Process.Start(_startInfo);
+        using var reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.UTF8);
+        var stopwatch = Stopwatch.StartNew();
+        while (reader.ReadLine() is { } line && stopwatch.ElapsedMilliseconds < 5000)
         {
-            StartInfo = new ProcessStartInfo
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardInput = false,
-                RedirectStandardOutput = true,
-                FileName = "Parsing/Mystem.exe",
-                Arguments = $"-ling {tempFile}",
-            }
-        };
-        process.Start();
-        
-        using (var reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.UTF8))
-        {
-            while (reader.ReadLine() is { } line)
-                yield return line;
+            if (TryExtractWordAndPartOfSpeech(line, out var wordAndPartOfSpeech))
+                AddInfoAboutWord(wordAndPartOfSpeech);
         }
+        stopwatch.Stop();
+        var errors = process.StandardError.ReadToEnd();
+
+        process.Kill();
         process.WaitForExit();
         File.Delete(tempFile);
+
+        if (stopwatch.ElapsedMilliseconds >= 5000)
+            return ActionStatus.Fail("обработка текста длится слишком долго");
+        return errors.IsNullOrEmpty() ? ActionStatus.Ok() : ActionStatus.Fail(errors);
     }
 
     private void WriteLinesToFile(IEnumerable<string> lines, string fileName)
@@ -59,27 +68,40 @@ public class LiteraryTextParser : IParser
         foreach (var line in lines)
             writer.WriteLine(line);
     }
-    
+
     public Result<WordInfo[]> Parse(Func<IEnumerable<string>> getTextLineByLine)
     {
-        var textInfo = ParseText(getTextLineByLine);
-        var countingDictionary = new Dictionary<Tuple<string, string>, int>();
+        _countingDictionary.Clear();
+        var result = new List<WordInfo>();
+        var parsingStatus = ParseText(getTextLineByLine);
+        if (!parsingStatus.IsSuccess)
+            return Result.Fail<WordInfo[]>("Литературная обработка текста не доступна. " +
+                                           $"Ошибка работы стороннего приложения Mystem: {parsingStatus.Error}");
 
-        foreach (var line in textInfo)
+        foreach (var pair in _countingDictionary)
         {
-            var info = line.Split('=');
-            if (info.Length < 2 || info[0].Contains('?')) continue;
-            var wordAndPartOfSpeech = Tuple.Create(info[0], info[1].Split(',')[0]);
-            if (!countingDictionary.TryAdd(wordAndPartOfSpeech, 1))
-                countingDictionary[wordAndPartOfSpeech]++;
+            var res = WordInfo.Create(pair.Key.Item1, _decryptionGrammems[pair.Key.Item2], pair.Value);
+            if (!res.IsSuccess)
+                return Result.Fail<WordInfo[]>($"Встретилась {res.Error}");
+            result.Add(res.GetValueOrThrow());
         }
 
-        var result = countingDictionary
-            .Select(pair => new WordInfo(
-                pair.Key.Item1,
-                _decryptionGrammems[pair.Key.Item2],
-                pair.Value))
-            .ToArray();
-        return result.Length == 0 ? Result.Fail<WordInfo[]>("Файл оказался пустым") : Result.Ok(result);
+        return result.Count == 0 ? Result.Fail<WordInfo[]>("Файл оказался пустым") : Result.Ok(result.ToArray());
+    }
+
+    private bool TryExtractWordAndPartOfSpeech(string wordAnalysis, out Tuple<string, string>? result)
+    {
+        result = null;
+        var info = wordAnalysis.Split('=');
+
+        if (info.Length < 2 || info[0].Contains('?')) return false;
+        result = Tuple.Create(info[0], info[1].Split(',')[0]);
+        return true;
+    }
+
+    private void AddInfoAboutWord(Tuple<string, string> wordAndPartOfSpeech)
+    {
+        if (!_countingDictionary.TryAdd(wordAndPartOfSpeech, 1))
+            _countingDictionary[wordAndPartOfSpeech]++;
     }
 }

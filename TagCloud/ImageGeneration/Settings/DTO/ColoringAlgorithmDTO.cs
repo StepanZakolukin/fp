@@ -1,6 +1,8 @@
+using Castle.Core.Internal;
+
 namespace TagCloud.ImageGeneration.Settings.DTO;
 
-public class ColoringAlgorithmDto : CrrectnessChecker
+public class ColoringAlgorithmDto : CrrectnessCheckerBase
 {
     private readonly Dictionary<string, IColorProvider> _coloringAlgorithms;
     public IEnumerable<string> NamesOfColoringAlgorithms => _coloringAlgorithms.Keys;
@@ -12,7 +14,7 @@ public class ColoringAlgorithmDto : CrrectnessChecker
         set
         {
             _selectedAlgorithm = value;
-            if (_selectedAlgorithm is "" or null)
+            if (_selectedAlgorithm.IsNullOrEmpty())
                 ChangeValue(false, "Значение не должно быть пустым");
             else if (!_coloringAlgorithms.ContainsKey(value))
                 ChangeValue(false, "Алгоритм расцветки не найден");
